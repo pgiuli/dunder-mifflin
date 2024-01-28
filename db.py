@@ -55,6 +55,7 @@ def create_db():
     conn.execute('''
         CREATE TABLE IF NOT EXISTS Users (
             UserID TEXT PRIMARY KEY,
+            Password TEXT NOT NULL,
             DisplayName TEXT NOT NULL,
             Role TEXT NOT NULL
         )
@@ -62,19 +63,19 @@ def create_db():
     conn.commit()
     conn.close()
 
-def add_user(user_id, display_name, role):
+def add_user(user_id, password, display_name, role):
     conn = sqlite3.connect('database.db')
     conn.execute('''
-        INSERT INTO Users (UserID, DisplayName, Role)
-        VALUES (?, ?, ?)
-    ''', (user_id, display_name, role))
+        INSERT INTO Users (UserID, Password, DisplayName, Role)
+        VALUES (?, ?, ?, ?)
+    ''', (user_id, password, display_name, role))
     conn.commit()
     conn.close()
 
-def get_user_displayname_and_role(user_id): # Returns tuple (display_name, role)
+def get_user(user_id): # Returns tuple
     conn = sqlite3.connect('database.db')
     cursor = conn.execute('''
-        SELECT DisplayName, Role
+        SELECT UserID, Password, DisplayName, Role
         FROM Users
         WHERE UserID = ?
     ''', (user_id,))
@@ -85,7 +86,7 @@ def get_user_displayname_and_role(user_id): # Returns tuple (display_name, role)
 def get_users():
     conn = sqlite3.connect('database.db')
     cursor = conn.execute('''
-        SELECT UserID, DisplayName, Role
+        SELECT UserID, Password, DisplayName, Role
         FROM Users
     ''')
     result = cursor.fetchall()
@@ -101,15 +102,18 @@ def add_item(item_id, current_stock, max_stock, display_name):
     conn.commit()
     conn.close()
 
-def get_stock():
+def get_stock(): # Returns dict of tuples
     conn = sqlite3.connect('database.db')
     cursor = conn.execute('''
-        SELECT ItemID, CurrentStock, MaxStock, MinStock, DisplayName
+        SELECT ItemID, CurrentStock, MaxStock, DisplayName
         FROM Stock
     ''')
     result = cursor.fetchall()
     conn.close()
-    return result # Returns list of tuples
+    stock = {}
+    for item in result:
+        stock[item[0]] = item
+    return stock
 
 def get_price(exchange_id, buy_or_sell):
     conn = sqlite3.connect('database.db')
@@ -133,6 +137,16 @@ def add_exchange(display_name, exchange_id, item_id, change_count, buy_price, se
     ''', (display_name, exchange_id, item_id, change_count, buy_price, sell_price, min_sell_amount))
     conn.commit()
     conn.close()
+
+def get_exchanges():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.execute('''
+        SELECT DisplayName, ExchangeID, ItemID, ChangeCount, BuyPrice, SellPrice, MinSellAmount
+        FROM Exchange
+    ''')
+    result = cursor.fetchall()
+    conn.close()
+    return result # Returns list of tuples
 
 def update_stock(item_id, change_count):
     conn = sqlite3.connect('database.db')
@@ -178,6 +192,7 @@ def get_discount(exchange_id, buy_or_sell):
         return result[1]
 
 def change_capital(amount):
+    amount = round(amount,2)
     conn = sqlite3.connect('database.db')
     conn.execute('''
         UPDATE Capital
@@ -186,13 +201,23 @@ def change_capital(amount):
     conn.commit()
     conn.close()
 
+def get_capital():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.execute('''
+        SELECT Amount
+        FROM Capital
+    ''')
+    result = cursor.fetchone()
+    conn.close()
+    return result[0]
+
 def set_defaults():
     #Add users
-    add_user('001', 'Stanley Hudson', 'Buyer')
-    add_user('002', 'Angela Martin', 'Buyer')
-    add_user('003', 'Dwight Schrute', 'Seller')
-    add_user('004', 'Jim Halpert', 'Seller')
-    add_user('005', 'Andy Bernard', 'Seller')
+    add_user('stanley', '001', 'Stanley Hudson', 'Buyer')
+    add_user('angela', '002', 'Angela Martin', 'Buyer')
+    add_user('dwight', '003', 'Dwight Schrute', 'Seller')
+    add_user('jim', '004', 'Jim Halpert', 'Seller')
+    add_user('andy', '005', 'Andy Bernard', 'Seller')
 
     #Add stock items
     add_item('A2', 0, 100, 'Paper A2')
