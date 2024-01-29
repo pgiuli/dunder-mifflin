@@ -67,10 +67,68 @@ def purchase(request_dict):
         db.change_capital(-total_cost)
         return 'Purchase successful!!!'
 
+def sell(request_dict):
+    request_dict = request_dict.to_dict()
+    #Remove 'Sell Area' from request_dict
+    area = request_dict.pop('Sell Area')
+    errors = []
+    print(request_dict)
+    total_profit = 0
+    db_stock = db.get_stock()
+    #print(db_stock)
+
+    #Check if max_stock is exceeded
+    stock_dict = {}
+    for item in request_dict:
+        #print(item)
+        #print(request_dict[item])
+        if request_dict[item] == '':
+            if 'P' not in item:
+                stock_dict[item] = 0
+        elif 'P' in item:
+            #print(purchase_dict[item[:-1]])
+            stock_dict[item[:-1]] += int(request_dict[item]) * 5
+        else:
+            stock_dict[item] = int(request_dict[item])
+    
+    #print(purchase_dict)
+    for item in stock_dict:
+        available_stock = db_stock[item][1]
+        if stock_dict[item] > available_stock:
+            errors.append(f'Not enough stock for {item}. Available stock: {available_stock}')
+    
+    #Calc final sell price
+    for item in request_dict:
+        if request_dict[item] == '':
+            continue
+        total_profit += calc_price(item, request_dict[item], 1)
+
+    #Calc shipping cost
+    if total_profit <= 499:
+        total_profit += 19.95
+    elif total_profit <= 999:
+        total_profit += 9.95
+
+
+    #Calc IVA
+    total_profit = round(total_profit*1.21,2)
+    
+    print(total_profit)
+    if len(errors) > 0:
+        return errors
+    else:
+        for item in stock_dict:
+            quantity = stock_dict[item]
+            if quantity == 0:
+                continue
+            db.update_stock(item, -quantity)
+            db.add_stats(item, 1, quantity, area)
+        db.change_capital(total_profit)
+        return 'Sale successful!!!'
 
 
     
-    
+
 
 
 

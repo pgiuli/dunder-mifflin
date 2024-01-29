@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sellers's Dashboard</title>
+    <title>Buyer's Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <form action="/sell" method="post">
+            <div>
+                <label>Client</label>
+                <input type="number" value="area" name="Sell Area" min="1" max="3">
+            </div>
             {% for exchange in exchanges %}
             <div>
-                <label>{{ exchange.display_name }} - Price: {{ exchange.buy_price }}</label>
-                <input type="number" value="{{ exchange.exchange_id }}" name="{{ exchange.exchange_id }}" min="0">
+                <label>{{ exchange.display_name }} - Price: {{ exchange.sell_price }}</label>
+                <input type="number" value="{{ exchange.exchange_id }}" name="{{ exchange.exchange_id }}" min="{{ exchange.min_sell_amount }}">
             </div>
             {% endfor %}
-            <input type="submit" value="Sell">
+            <input type="submit" value="Purchase">
         </form>
     </div>
 

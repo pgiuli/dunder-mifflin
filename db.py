@@ -209,7 +209,7 @@ def get_capital():
     ''')
     result = cursor.fetchone()
     conn.close()
-    return result[0]
+    return round(result[0],2)
 
 def set_defaults():
     #Add users

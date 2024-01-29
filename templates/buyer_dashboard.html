@@ -5,9 +5,50 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        IT WORKS!! - Buyer
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/purchase">Compra</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/stats">Statistics</a>
+            </li>
+          </ul>
+      </nav>
 
+    <div class="container">
+        
+        <div class="row">
+            <!-- Buttons on the left -->
+            <div class="col-md-4">
+                <a href="/logout" class="btn btn-primary">Logout</a>
+                <a href="/purchase" class="btn btn-primary">Purchase</a>
+                <a href="/stats" class="btn btn-primary">Stats</a>
+            </div>
+            <!-- User info in the middle -->
+            <div class="col-md-4">
+                <h2>Hola, {{ user.display_name }}</h2>
+                <p>User ID: {{ user.id }}</p>
+                <p>Role: {{ user.role }}</p>
+                <p>Capital: {{ capital }}</p>
+            </div>
+            <!-- Stock view on the right -->
+            <div class="col-md-4">
+                <h2>Current Stock</h2>
+                {% for item in stock %}
+                <p>{{ item.name }}: {{ item.quantity }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </body>
 </html>

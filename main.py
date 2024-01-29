@@ -63,7 +63,7 @@ def purchase():
         return redirect('/dashboard')
     if request.method == 'POST':
         status = utils.purchase(request.form)
-        return status
+        return render_template('purchase_after.html', status=status)
     elif request.method == 'GET':
         db_exchanges = db.get_exchanges()
         #print(db_exchanges)
@@ -81,9 +81,10 @@ def purchase():
 def sell():
     if current_user.role != 'Seller':
         return redirect('/dashboard')
-    
-        return render_template('sell.html', )
-    
+    if request.method == 'POST':
+        print(request.form)
+        status = utils.sell(request.form)
+        return render_template('sell_after.html', status=status)
     elif request.method == 'GET':
         db_exchanges = db.get_exchanges()
         #print(db_exchanges)
@@ -92,7 +93,7 @@ def sell():
             exchanges.append({
                 'display_name': exchange[0],
                 'exchange_id': exchange[1],
-                'sell_price': exchange[4],
+                'sell_price': exchange[5],
                 'min_sell_amount': exchange[6]
             })
         return render_template('sell.html', exchanges=exchanges)
