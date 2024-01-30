@@ -5,17 +5,65 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Dunder Mifflin</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Inici</a>
+            </li>
+            <li class="nav-item active">
+                {% if user.role == 'Buyer' %}
+              <a class="nav-link" href="/purchase">Compra <span class="sr-only">(current)</span></a>
+                {% endif %}
+                {% if user.role == 'Seller' %}
+                <a class="nav-link" href="/sell">Venta</a>
+                    {% endif %}
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/stats">Estadístiques</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Surt</a>
+            </li>
+          </ul>
+      </nav>
+
     <div class="container">
-        <form action="/purchase" method="post">
-            {% for exchange in exchanges %}
-            <div>
-                <label>{{ exchange.display_name }} - Price: {{ exchange.buy_price }}</label>
-                <input type="number" value="{{ exchange.exchange_id }}" name="{{ exchange.exchange_id }}" min="0">
-            </div>
+        <div class="row">
+            <div class="col-md-8">
+        
+              <form action="/purchase" method="post">
+                <table class="table">
+                    {% for exchange in exchanges %}
+                    <tr>
+                        <td>
+                            <label>{{ exchange.display_name }} - Price: {{ exchange.buy_price }}€</label>
+                        </td>
+                        <td>
+                            <input type="number" value="{{ exchange.exchange_id }}" name="{{ exchange.exchange_id }}" min="0" class="form-control">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <input type="submit" value="Purchase" class="btn btn-primary">
+            </form>
+        </div>
+        <div class="col-md-4">
+            {% if status != None %}
+            {% for item in status %}
+            <h4>{{ item }}</h4>
             {% endfor %}
-            <input type="submit" value="Purchase">
-        </form>
+            {% endif %}
+        </div>
+        </div>
     </div>
+    
 
 </body>
 </html>

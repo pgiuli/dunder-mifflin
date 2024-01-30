@@ -32,7 +32,11 @@ class User(UserMixin):
 
 @website.route('/')
 def index():
-    return render_template('index.html')
+    #If logged in, redirect to dashboard
+    if current_user.is_authenticated:
+        return redirect('/dashboard')
+    else:
+        return redirect('/login')
 
 @website.route('/login', methods=['GET', 'POST'])
 def login():
@@ -51,10 +55,8 @@ def login():
 @website.route('/dashboard')
 @login_required
 def dashboard():
-    if current_user.role == 'Buyer':
-        return render_template('buyer_dashboard.html', user=current_user, stock=db.get_stock(), capital=db.get_capital())
-    elif current_user.role == 'Seller':
-        return render_template('seller_dashboard.html')
+    print(current_user.id)
+    return render_template('dashboard.html', user=current_user, stock=db.get_stock(), capital=db.get_capital())
 
 @website.route('/purchase', methods=['POST', 'GET'])
 @login_required
@@ -62,11 +64,7 @@ def purchase():
     if current_user.role != 'Buyer':
         return redirect('/dashboard')
     if request.method == 'POST':
-        status = utils.purchase(request.form)
-        return render_template('purchase_after.html', status=status)
-    elif request.method == 'GET':
         db_exchanges = db.get_exchanges()
-        #print(db_exchanges)
         exchanges = []
         for exchange in db_exchanges:
             exchanges.append({
@@ -74,7 +72,21 @@ def purchase():
                 'exchange_id': exchange[1],
                 'buy_price': exchange[4]
             })
-        return render_template('purchase.html', exchanges=exchanges)
+        status = utils.purchase(request.form, user_id=current_user.id)
+        #shutup
+        if type(status) != list:
+            status = [status]
+        return render_template('purchase.html', exchanges=exchanges, status=status, user=current_user)
+    elif request.method == 'GET':
+        db_exchanges = db.get_exchanges()
+        exchanges = []
+        for exchange in db_exchanges:
+            exchanges.append({
+                'display_name': exchange[0],
+                'exchange_id': exchange[1],
+                'buy_price': exchange[4]
+            })
+        return render_template('purchase.html', exchanges=exchanges, user=current_user)
 
 @website.route('/sell', methods=['POST', 'GET'])
 @login_required
@@ -82,10 +94,7 @@ def sell():
     if current_user.role != 'Seller':
         return redirect('/dashboard')
     if request.method == 'POST':
-        print(request.form)
-        status = utils.sell(request.form)
-        return render_template('sell_after.html', status=status)
-    elif request.method == 'GET':
+        clients = db.get_clients()
         db_exchanges = db.get_exchanges()
         #print(db_exchanges)
         exchanges = []
@@ -96,7 +105,36 @@ def sell():
                 'sell_price': exchange[5],
                 'min_sell_amount': exchange[6]
             })
-        return render_template('sell.html', exchanges=exchanges)
+        status = utils.sell(request.form, user_id=current_user.id)
+        #shutup
+        if type(status) != list:
+            status = [status]
+        return render_template('sell.html',exchanges=exchanges, status=status, clients=clients, user=current_user)
+    elif request.method == 'GET':
+        clients = db.get_clients()
+        print(clients)
+        db_exchanges = db.get_exchanges()
+        #print(db_exchanges)
+        exchanges = []
+        for exchange in db_exchanges:
+            exchanges.append({
+                'display_name': exchange[0],
+                'exchange_id': exchange[1],
+                'sell_price': exchange[5],
+                'min_sell_amount': exchange[6]
+            })
+        return render_template('sell.html', exchanges=exchanges, clients=clients, user=current_user)
+
+@website.route('/stats', methods=['GET'])
+@login_required
+def stats():
+    stats = db.get_stats()
+    #print(stats)
+    clients = db.get_clients() #For display_name
+    #print(clients)
+    stock = db.get_stock() #For display_name
+    #print(stock)
+    return render_template('stats.html', stats=stats, clients=clients, stock=stock, user=current_user)
 
 @website.route('/logout')
 def logout():
@@ -104,4 +142,4 @@ def logout():
     return redirect('/')
 
 if __name__ == '__main__':
-    website.run(debug=True)
+    website.run(debug=True, host='0.0.0.0', port=5001)

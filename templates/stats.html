@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Estadístiques</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Dunder Mifflin</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Inici</a>
+            </li>
+            <li class="nav-item">
+                {% if user.role == 'Buyer' %}
+              <a class="nav-link" href="/purchase">Compra</a>
+                {% endif %}
+                {% if user.role == 'Seller' %}
+                <a class="nav-link" href="/sell">Venta</a>
+                    {% endif %}
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/stats">Estadístiques <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Surt</a>
+            </li>
+          </ul>
+      </nav>
+
+    <div class="container">
+        <h1>Transaccions</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Ítem</th>
+                    <th scope="col">Usuari</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Quantitat</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in stats %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ stock[stat[0]][3] }}</td>
+                    <td>{{ stat[5] }}</td>
+                    {% if stat[3] == 0 %}
+                    <td>Compra</td>
+                    {% else %}
+                    <td>{{stat[3]}}</td>
+                    {% endif %}
+                    <td>{{ stat[2] }}</td>
+                    <!-- Add more data cells as needed -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

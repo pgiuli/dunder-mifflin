@@ -38,17 +38,20 @@ def create_db():
         CREATE TABLE IF NOT EXISTS Discount (
             ExchangeID TEXT NOT NULL,
             BuyDiscount REAL NOT NULL,
-            SellDiscount REAL NOT NULL
+            SellDiscount REAL NOT NULL,
+            FOREIGN KEY(ExchangeID) REFERENCES Exchange(ExchangeID)
         )
     ''')
 
     conn.execute('''
         CREATE TABLE IF NOT EXISTS Stats (
-            ItemID TEXT NOT NULL,
+            ExchangeID TEXT NOT NULL,
             Operation TEXT NOT NULL,
             Amount INTEGER NOT NULL,
             Area INTEGER NOT NULL,
-            FOREIGN KEY(ItemID) REFERENCES Stock(ItemID)
+            ClientID TEXT NOT NULL,
+            UserID TEXT NOT NULL,
+            FOREIGN KEY(ExchangeID) REFERENCES Exchange(ItemID)
         )
     ''')
 
@@ -60,6 +63,15 @@ def create_db():
             Role TEXT NOT NULL
         )
     ''')
+    
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS Clients (
+            ClientID TEXT PRIMARY KEY,
+            DisplayName TEXT NOT NULL,
+            Area INTEGER NOT NULL
+        )
+    ''')
+    
     conn.commit()
     conn.close()
 
@@ -159,14 +171,24 @@ def update_stock(item_id, change_count):
     conn.close()
 
 #Area codes: 0 For purchase, 1,2,3 for sale
-def add_stats(exchange_id, operation, amount, area):
+def add_stats(exchange_id, operation, amount, area, client_id, user_id):
     conn = sqlite3.connect('database.db')
     conn.execute('''
-        INSERT INTO Stats (ExchangeID, Operation, Amount, Area)
-        VALUES (?, ?, ?, ?)
-    ''', (exchange_id, operation, amount, area))
+        INSERT INTO Stats (ExchangeID, Operation, Amount, Area, ClientID, UserID)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ''', (exchange_id, operation, amount, area, client_id, user_id))
     conn.commit()
     conn.close()
+
+def get_stats():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.execute('''
+        SELECT ExchangeID, Operation, Amount, Area, ClientID, UserID
+        FROM Stats
+    ''')
+    result = cursor.fetchall()
+    conn.close()
+    return result
 
 def add_discount(exchange_id, buy_discount, sell_discount):
     conn = sqlite3.connect('database.db')
@@ -210,6 +232,26 @@ def get_capital():
     result = cursor.fetchone()
     conn.close()
     return round(result[0],2)
+
+def add_client(client_id, display_name, area):
+    conn = sqlite3.connect('database.db')
+    conn.execute('''
+        INSERT INTO Clients (ClientID, DisplayName, Area)
+        VALUES (?, ?, ?)
+    ''', (client_id, display_name, int(area)))
+    conn.commit()
+    conn.close()
+
+def get_clients():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.execute('''
+        SELECT ClientID, DisplayName, Area
+        FROM Clients
+    ''')
+    result = cursor.fetchall()
+    conn.close()
+    return result
+
 
 def set_defaults():
     #Add users
@@ -263,8 +305,18 @@ def set_defaults():
     add_discount('A3P', 0.03, 0.02)
     add_discount('A4P', 0.02, 0.015)
 
-    change_capital(10000)
+    #Add clients
+    add_client('mitch', 'Mitch Smith ', 1)
+    add_client('pam', 'Pam Rogers', 1)
+    add_client('michael', 'Michael Reeves', 2)
+    add_client('kevin', 'Kevin Malone', 2)
+    add_client('oscar', 'Oscar Martinez', 3)
+    add_client('toby', 'Toby Flenderson', 3)
+    add_client('phyllis', 'Phyllis Vance', 3)
 
+
+    change_capital(10000)
+    
 
 
 if __name__ == '__main__':

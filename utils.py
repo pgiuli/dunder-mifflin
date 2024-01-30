@@ -14,7 +14,7 @@ def calc_price(exchange_id, amount, buy_or_sell):
     return round(price,2)
 
 
-def purchase(request_dict):
+def purchase(request_dict, user_id):
     request_dict = request_dict.to_dict()
     errors = []
 
@@ -63,14 +63,15 @@ def purchase(request_dict):
             if quantity == 0:
                 continue
             db.update_stock(item, quantity)
-            #db.add_stats(item, 0, quantity, 0)
+            db.add_stats(item, 0, quantity, 0, 0, user_id)
         db.change_capital(-total_cost)
         return 'Purchase successful!!!'
 
-def sell(request_dict):
+def sell(request_dict, user_id):
     request_dict = request_dict.to_dict()
     #Remove 'Sell Area' from request_dict
-    area = request_dict.pop('Sell Area')
+    area = request_dict.pop('Sell Area', 0)
+    client_id = request_dict.pop('Client ID', 0)
     errors = []
     print(request_dict)
     total_profit = 0
@@ -122,7 +123,8 @@ def sell(request_dict):
             if quantity == 0:
                 continue
             db.update_stock(item, -quantity)
-            db.add_stats(item, 1, quantity, area)
+            #Stores stock dict not request dict, therefore the A4P and A3P are not included (should create another forloop (or not))
+            db.add_stats(item, 1, quantity, area, client_id,user_id)
         db.change_capital(total_profit)
         return 'Sale successful!!!'
 
