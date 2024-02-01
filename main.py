@@ -136,6 +136,10 @@ def stats():
     #print(stock)
     return render_template('stats.html', stats=stats, clients=clients, stock=stock, user=current_user)
 
+@website.route('/favicon.ico')
+def favicon():
+    return website.send_static_file('favicon.ico')
+
 @website.route('/logout')
 def logout():
     logout_user()
