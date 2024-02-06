@@ -40,6 +40,14 @@
         
               <form action="/purchase" method="post">
                 <table class="table">
+                  <tr>
+                    <td>
+                        <label for="Distributor">Distribuidor - Empresa</label>
+                    </td>
+                    <td>
+                        <input type="text" value="" name="Distributor" id="Distributor" class="form-control" required>
+                    </td>
+                </tr>
                     {% for exchange in exchanges %}
                     <tr>
                         <td>

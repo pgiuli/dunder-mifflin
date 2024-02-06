@@ -170,6 +170,28 @@ def update_stock(item_id, change_count):
     conn.commit()
     conn.close()
 
+def get_client_area(client_id):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.execute('''
+        SELECT Area
+        FROM Clients
+        WHERE ClientID = ?
+    ''', (client_id,))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0]
+
+def get_client_display_name(client_id):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.execute('''
+        SELECT DisplayName
+        FROM Clients
+        WHERE ClientID = ?
+    ''', (client_id,))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0]
+
 #Area codes: 0 For purchase, 1,2,3 for sale
 def add_stats(exchange_id, operation, amount, area, client_id, user_id):
     conn = sqlite3.connect('database.db')

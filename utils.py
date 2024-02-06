@@ -16,8 +16,10 @@ def calc_price(exchange_id, amount, buy_or_sell):
 
 def purchase(request_dict, user_id):
     request_dict = request_dict.to_dict()
-    errors = []
+    #Remove 'Sell Area' from request_dict
+    distributor = request_dict.pop('Distributor', 0)
 
+    errors = []
     total_cost = 0
     available_capital = db.get_capital()
     db_stock = db.get_stock()
@@ -54,7 +56,7 @@ def purchase(request_dict, user_id):
     if total_cost > available_capital:
         errors.append(f'Not enough capital. Available capital: {available_capital}')
     
-    print(total_cost)
+    #print(total_cost)
     if len(errors) > 0:
         return errors
     else:
@@ -63,15 +65,17 @@ def purchase(request_dict, user_id):
             if quantity == 0:
                 continue
             db.update_stock(item, quantity)
-            db.add_stats(item, 0, quantity, 0, 0, user_id)
+            db.add_stats(item, 0, quantity, 0, distributor, user_id)
         db.change_capital(-total_cost)
         return 'Purchase successful!!!'
 
 def sell(request_dict, user_id):
     request_dict = request_dict.to_dict()
+    print(request_dict)
     #Remove 'Sell Area' from request_dict
-    area = request_dict.pop('Sell Area', 0)
     client_id = request_dict.pop('Client ID', 0)
+    area = db.get_client_area(client_id)
+    client_display_name = db.get_client_display_name(client_id)
     errors = []
     print(request_dict)
     total_profit = 0
@@ -124,7 +128,9 @@ def sell(request_dict, user_id):
                 continue
             db.update_stock(item, -quantity)
             #Stores stock dict not request dict, therefore the A4P and A3P are not included (should create another forloop (or not))
-            db.add_stats(item, 1, quantity, area, client_id,user_id)
+            print(item,1, quantity, area, client_id, user_id)
+            #Store client_display_name instead of client_id because i'm a lazy fuck
+            db.add_stats(item, 1, quantity, area, client_display_name, user_id)
         db.change_capital(total_profit)
         return 'Sale successful!!!'
 

@@ -41,9 +41,10 @@
                     <th scope="col">#</th>
                     <th scope="col">Ítem</th>
                     <th scope="col">Usuari</th>
-                    <th scope="col">Client</th>
+                    <th scope="col">Transacció</th>
+                    <th scope="col">Client/Distribuïdor</th>
                     <th scope="col">Quantitat</th>
-                    <!-- Add more columns as needed -->
+
                 </tr>
             </thead>
             <tbody>
@@ -55,10 +56,10 @@
                     {% if stat[3] == 0 %}
                     <td>Compra</td>
                     {% else %}
-                    <td>{{stat[3]}}</td>
+                    <td>Venta</td>
                     {% endif %}
+                    <td>{{ stat[4] }}</td>
                     <td>{{ stat[2] }}</td>
-                    <!-- Add more data cells as needed -->
                 </tr>
                 {% endfor %}
             </tbody>
