@@ -255,6 +255,15 @@ def get_capital():
     conn.close()
     return round(result[0],2)
 
+def remove_client(client_id):
+    conn = sqlite3.connect('database.db')
+    conn.execute('''
+        DELETE FROM Clients
+        WHERE ClientID = ?
+    ''', (client_id,))
+    conn.commit()
+    conn.close()
+
 def add_client(client_id, display_name, area):
     conn = sqlite3.connect('database.db')
     conn.execute('''

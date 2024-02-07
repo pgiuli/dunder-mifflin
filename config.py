@@ -8,7 +8,8 @@ options = {
     '5' : 'Afegir un nou intercanvi',
     '6' : 'Afegir un nou descompte',
     '7' : 'Modificar capital',
-    '8' : 'Soritir'
+    '8' : 'Eliminar client',
+    '9' : 'Sortir'
 }
 
 
@@ -56,3 +57,11 @@ while True:
         case '7':
             capital = input("Capital (positiu per a afegir, negatiu per a retirar): ")
             db.change_capital(capital)
+        case '8':
+            client_id = input("ID del client: ")
+            db.delete_client(client_id)
+        case '9':
+            exit()
+        case _:
+            print('Opció no vàlida')
+            continue
