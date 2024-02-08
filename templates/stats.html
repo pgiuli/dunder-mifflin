@@ -21,7 +21,7 @@
               <a class="nav-link" href="/purchase">Compra</a>
                 {% endif %}
                 {% if user.role == 'Seller' %}
-                <a class="nav-link" href="/sell">Venta</a>
+                <a class="nav-link" href="/sell">Venda</a>
                     {% endif %}
             </li>
             <li class="nav-item active">
@@ -57,7 +57,7 @@
                     {% if stat[3] == 0 %}
                     <td>Compra</td>
                     {% else %}
-                    <td>Venta</td>
+                    <td>Venda</td>
                     {% endif %}
                     <td>{{ stat[4] }}</td>
                     {% if stat[3] == 0%}
