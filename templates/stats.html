@@ -43,6 +43,7 @@
                     <th scope="col">Usuari</th>
                     <th scope="col">Transacció</th>
                     <th scope="col">Client/Distribuïdor</th>
+                    <th scope="col">Area</th>
                     <th scope="col">Quantitat</th>
 
                 </tr>
@@ -59,6 +60,11 @@
                     <td>Venta</td>
                     {% endif %}
                     <td>{{ stat[4] }}</td>
+                    {% if stat[3] == 0%}
+                    <td>N/A</td>
+                    {% else %}
+                    <td>{{ stat[3] }}</td>
+                    {% endif %}
                     <td>{{ stat[2] }}</td>
                 </tr>
                 {% endfor %}
